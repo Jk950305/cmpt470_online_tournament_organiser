@@ -1,0 +1,243 @@
+create table person (
+	person_id float not null auto_increment
+	, name_first varchar(100) not null
+	, name_last varchar(100) not null
+	, name_first_key varchar(100) not null
+	, name_last_key varchar(100) not null
+	, birth_dt_tm datetime not null
+	, beg_effective_dt_tm datetime not null
+	, end_effective_dt_tm datetime
+	, active_ind bit not null
+	, primary key(person_id)
+);
+
+create index person_idx_name
+on person (name_last_key, name_first_key);
+
+insert into person(name_first, name_last, name_first_key, name_last_key, birth_dt_tm, beg_effective_dt_tm, end_effective_dt_tm, active_ind)
+values("Dave", "Gill", "DAVE", "GILL", '1992-09-30 00:00:00', now(), null, 1);
+
+insert into person(name_first, name_last, name_first_key, name_last_key, birth_dt_tm, beg_effective_dt_tm, end_effective_dt_tm, active_ind)
+values("Matt", "Gill", "DAVE", "GILL", '1995-07-27 00:00:00', now(), null, 1);
+
+
+create table event(
+	event_id float not null auto_increment
+	, event_name varchar(100) not null
+	, event_start_dt_tm datetime not null
+	, event_end_dt_tm datetime not null
+	, beg_effective_dt_tm datetime not null
+	, end_effective_dt_tm datetime 
+	, active_ind bit not null
+	, primary key(event_id)
+);
+
+insert into event(event_name, event_start_dt_tm, event_end_dt_tm, beg_effective_dt_tm, active_ind)
+values("Test", now(), now(), now(), 1);
+
+create table tournament (
+	tournament_id float not null auto_increment
+	, event_id float not null 
+	, tournament_name varchar(100)
+	, elimination_count int not null
+	, beg_effective_dt_tm datetime not null
+	, end_effective_dt_tm datetime 
+	, active_ind bit not null
+	, primary key(tournament_id)
+	, foreign key(event_id) references event(event_id)
+);
+
+create index tournament_idx_event
+on tournament(event_id);
+
+insert into tournament(event_id, tournament_name, elimination_count, beg_effective_dt_tm, active_ind)
+values(1, "Longsword", 16, now(), 1);
+
+create table tournament_pool (
+	tournament_pool_id float not null auto_increment
+	, tournament_id float not null
+	, pool_seq int not null
+	, beg_effective_dt_tm datetime not null
+	, end_effective_dt_tm datetime 
+	, active_ind bit not null
+	, primary key(tournament_pool_id)
+	, foreign key(tournament_id) references tournament(tournament_id)
+);
+
+create index tournament_pool_idx_tournament
+on tournament_pool(tournament_id, pool_seq);
+
+insert into tournament_pool(tournament_id, pool_seq, beg_effective_dt_tm, active_ind) values(1, 1, now(), 1);
+
+create table pool_match (
+	match_id float not null auto_increment
+	, tournament_pool_id float
+	, first_fighter_id float not null
+	, second_fighter_id float not null
+	, first_fighter_total int
+	, second_fighter_total int
+	, beg_effective_dt_tm datetime not null
+	, end_effective_dt_tm datetime 
+	, active_ind bit not null
+	, primary key(match_id)
+	, foreign key(tournament_pool_id) references tournament_pool(tournament_pool_id)
+	, foreign key(first_fighter_id) references person(person_id)
+	, foreign key(second_fighter_id) references person(person_id)
+);
+
+create index pool_match_idx_pool_person
+on pool_match(tournament_pool_id, first_fighter_id, second_fighter_id);
+
+insert into pool_match(tournament_pool_id, first_fighter_id, second_fighter_id, beg_effective_dt_tm, active_ind)
+values(1, 1, 2, now(), 1);
+
+create table match_round(
+	round_id float not null auto_increment
+	, match_id float not null
+	, match_seq int not null
+	, first_fighter_id float not null
+	, second_fighter_id float not null
+	, first_fighter_score int
+	, second_fighter_score int
+	, double_ind bit
+	, no_contest_ind bit
+	, beg_effective_dt_tm datetime not null
+	, end_effective_dt_tm datetime 
+	, active_ind bit not null
+	, primary key(round_id)
+	, foreign key(match_id) references pool_match(match_id)
+	, foreign key(first_fighter_id) references person(person_id)
+	, foreign key(second_fighter_id) references person(person_id)
+);
+create index match_round_idx_first_fighter
+on match_round(first_fighter_id);
+
+create index match_round_idx_second_fighter
+on match_round(second_fighter_id);
+
+create index match_round_idx_seq 
+on match_round(match_id, match_seq);
+
+insert into match_round(match_id, match_seq, first_fighter_id, second_fighter_id, beg_effective_dt_tm, active_ind)
+values(1, 1, 1, 2, now(), 1);
+
+create table person_event_reltn (
+	person_event_reltn_id float not null auto_increment
+	, event_id float not null
+	, person_id float not null
+	, beg_effective_dt_tm datetime not null
+	, end_effective_dt_tm datetime 
+	, active_ind bit not null
+	, primary key(person_event_reltn_id)
+	, foreign key(event_id) references event(event_id)
+	, foreign key(person_id) references person(person_id)
+);
+
+create index person_event_reltn_idx_event
+on person_event_reltn(event_id);
+
+create index person_event_reltn_idx_person
+on person_event_reltn(person_id);
+
+insert into person_event_reltn(event_id, person_id, beg_effective_dt_tm, active_ind)values(1,1,now(),1);
+insert into person_event_reltn(event_id, person_id, beg_effective_dt_tm, active_ind)values(1,2,now(),1);
+
+create table person_tournament_reltn (
+	person_tournament_reltn_id float not null auto_increment
+	, tournament_id float not null
+	, person_id float not null
+	, beg_effective_dt_tm datetime not null
+	, end_effective_dt_tm datetime 
+	, active_ind bit not null
+	, primary key(person_tournament_reltn_id)
+	, foreign key(tournament_id) references tournament(tournament_id)
+	, foreign key(person_id) references person(person_id)
+);
+
+create index person_tournament_reltn_idx_tournament
+on person_tournament_reltn(tournament_id);
+
+create index person_tournament_reltn_idx_person
+on person_tournament_reltn(person_id);
+
+insert into person_tournament_reltn(tournament_id, person_id, beg_effective_dt_tm, active_ind)values(1,1,now(),1);
+insert into person_tournament_reltn(tournament_id, person_id, beg_effective_dt_tm, active_ind)values(1,2,now(),1);
+
+create table person_tournament_pool_reltn (
+	person_tournament_pool_reltn float not null auto_increment
+	, tournament_pool_id float not null
+	, person_id float not null
+	, beg_effective_dt_tm datetime not null
+	, end_effective_dt_tm datetime 
+	, active_ind bit not null
+	, primary key(person_tournament_pool_reltn)
+	, foreign key(tournament_pool_id) references tournament_pool(tournament_pool_id)
+	, foreign key(person_id) references person(person_id)
+);
+
+create index person_tournament_pool_reltn_idx_pool
+on person_tournament_pool_reltn(tournament_pool_id);
+
+create index person_tournament_pool_reltn_idx_person
+on person_tournament_pool_reltn(person_id);
+
+insert into person_tournament_pool_reltn(tournament_pool_id, person_id, beg_effective_dt_tm, active_ind)values(1,1,now(),1);
+insert into person_tournament_pool_reltn(tournament_pool_id, person_id, beg_effective_dt_tm, active_ind)values(1,2,now(),1);
+
+-- Users
+create table users (
+	user_id float not null auto_increment
+	, person_id float 
+	, email varchar(100) not null
+	, password_hash varchar(256) not null
+	, name_first varchar(100) not null
+	, name_last varchar(100) not null
+	, name_first_key varchar(100) not null
+	, name_last_key varchar(100) not null
+	, beg_effective_dt_tm datetime not null
+	, end_effective_dt_tm datetime 
+	, active_ind bit not null
+	, primary key(user_id)
+	, foreign key(person_id) references person(person_id)
+);
+
+create index user_idx_email
+on users(email);
+
+create index user_idx_name 
+on users(name_last_key, name_first_key);
+
+
+-- Password is same as email for these two accounts
+insert into users(person_id, email, password_hash, name_first, name_last, name_first_key, name_last_key, beg_effective_dt_tm, active_ind)
+values(1, "dave@sfu.ca", '$2y$10$hStGAMRKY0JsRhyhJ6tPde6yXN7KfUUYxkH1A3UWVFBRri/6QAWKq', "Dave", "Gill", "DAVE", "GILL", now(), 1);
+
+insert into users(person_id, email, password_hash, name_first, name_last, name_first_key, name_last_key, beg_effective_dt_tm, active_ind)
+values(2, "matt@sfu.ca", '$2y$10$5t8GtV6l8/JVifMddpXVSOtZos9NvlRVOUHlrswTEG5559yc4s/Fq', "Matt", "Gill", "MATT", "GILL", now(), 1);
+
+
+create table tournament_user_reltn (
+	tournament_user_reltn_id float not null auto_increment
+	, user_id float not null
+	, tournament_id float not null
+	, score_keeper_ind bit 
+	, tournament_organiser_ind bit
+	, beg_effective_dt_tm datetime not null
+	, end_effective_dt_tm datetime 
+	, active_ind bit not null
+	, primary key(tournament_user_reltn_id)
+	, foreign key(user_id) references users(user_id)
+	, foreign key(tournament_id) references tournament(tournament_id)
+);
+
+create index tournament_user_reltn_idx_user
+on tournament_user_reltn(user_id);
+
+create index tournament_user_reltn_idx_tournament
+on tournament_user_reltn(tournament_id);
+
+insert into tournament_user_reltn(user_id, tournament_id, score_keeper_ind, tournament_organiser_ind, beg_effective_dt_tm, active_ind)values(1,1,1,0,now(),1);
+
+insert into tournament_user_reltn(user_id, tournament_id, score_keeper_ind, tournament_organiser_ind, beg_effective_dt_tm, active_ind)values(2,1,1,0,now(),1);
+
+insert into tournament_user_reltn(tournament_pool_id, person_id, beg_effective_dt_tm, active_ind)values(1,1,now(),1);

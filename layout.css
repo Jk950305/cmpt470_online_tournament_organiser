@@ -1,0 +1,75 @@
+body, .jumbotron {
+    background: rgb(255, 251, 249);
+    font-family: 'Nanum Gothic', sans-serif;
+    color: rgba(25, 25, 25);
+}
+
+h1 {
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* landing page */
+
+.landing-container {
+    bottom: 0rem;
+}
+
+.landing-item {
+
+    padding: 2rem;
+    margin: 0 4rem;
+}
+
+img {
+    max-height: 28rem;
+    border-radius: 10px;
+}
+
+a{
+    text-decoration: none;
+    transition: 0.3s;
+    color: rgb(255, 41, 41);
+}
+
+a:hover {
+    text-decoration: none;
+    transform: scale(1.1, 1.1);
+    transition: 1s;
+    color: rgb(179, 0, 0);
+}
+
+.overlay-title {
+    position: relative;
+    color: rgb(26, 25, 25);
+}
+
+
+
+
+.table-wrapper {
+    border: 1px solid #DDD;
+}
+
+
+/*matches*/
+td.cross_out1
+{
+    position:   relative;
+    background: linear-gradient(to right top, rgba(221,221,221,0) 0%,rgba(221,221,221,0) 49%,rgba(221,221,221,1) 50%,rgba(221,221,221,1) 51%,rgba(221,221,221,0) 52%,rgba(221,221,221,0) 100%);
+}
+.result{
+    background: #EEE;
+}
+table.even {
+  table-layout: fixed;
+  width: 100%;  
+}
+
+.match-tab{
+    table-layout: fixed;
+    width: 100%; 
+}
+
+td.matched:hover{
+    background: #AAA;
+}
